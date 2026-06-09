@@ -1,6 +1,7 @@
-<img width="1878" height="890" alt="image" src="https://www.rd.com/wp-content/uploads/2023/05/49-Tech-support-Have-you-tried-restarting-your-computer-GettyImages-460689215.jpg?fit=750%2C750&original_fit=700,700" />## HOW 2 RUNNN 
-# make sure u have python installed 
-# RUN
+<img width="1878" height="890" alt="image" src="https://www.rd.com/wp-content/uploads/2023/05/49-Tech-support-Have-you-tried-restarting-your-computer-GettyImages-460689215.jpg?fit=750%2C750&original_fit=700,700" />
+## HOW 2 RUNNN 
+#make sure u have python installed 
+then RUN
 `pip install pandas numpy flask openpyxl`
 then cd to web_app
 then run the app.py
