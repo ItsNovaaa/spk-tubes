@@ -1,4 +1,4 @@
-<img width="1878" height="890" alt="image" src="[https://github.com/user-attachments/assets/0e0f296a-d86c-43c3-b7c2-a80bc3b5357a](https://www.rd.com/wp-content/uploads/2023/05/49-Tech-support-Have-you-tried-restarting-your-computer-GettyImages-460689215.jpg?fit=750%2C750&original_fit=700,700)" />## HOW 2 RUNNN 
+<img width="1878" height="890" alt="image" src="https://www.rd.com/wp-content/uploads/2023/05/49-Tech-support-Have-you-tried-restarting-your-computer-GettyImages-460689215.jpg?fit=750%2C750&original_fit=700,700" />## HOW 2 RUNNN 
 # make sure u have python installed 
 # RUN
 `pip install pandas numpy flask openpyxl`
