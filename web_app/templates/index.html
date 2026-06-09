@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCDM Decision Support System - FUCOM & VIKOR</title>
+    <!-- Tailwind CSS v4 Browser Compiler -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- ChartJS for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #0b0f19;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(31, 41, 234, 0.15) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, rgba(99, 102, 241, 0.15) 0, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(236, 72, 153, 0.12) 0, transparent 40%);
+            background-attachment: fixed;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(99, 102, 241, 0.3);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.6);
+        }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen pb-16">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-50 backdrop-blur-md border-b border-slate-800 bg-slate-950/60 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-indigo-600/20 text-indigo-400 rounded-xl border border-indigo-500/30 shadow-indigo-500/10 shadow-lg">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2z"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-1.5">
+                        MCDM System
+                        <span class="text-xs bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-500/30">FUCOM & VIKOR</span>
+                    </h1>
+                    <p class="text-xs text-slate-400">Sistem Pendukung Keputusan Multi-Kriteria</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="#cara-penggunaan" class="text-sm text-slate-400 hover:text-white transition-colors duration-200 hidden sm:block">Panduan</a>
+                <span class="h-4 w-px bg-slate-800 hidden sm:block"></span>
+                <div class="text-sm font-semibold text-indigo-400 bg-indigo-500/10 px-3 py-1.5 rounded-lg border border-indigo-500/20">
+                    v1.0 - Local Server
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 grid grid-cols-1 gap-8">
+        
+        <!-- Welcome Hero -->
+        <div class="bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 rounded-3xl p-6 md:p-8 border border-slate-800/80 shadow-2xl relative overflow-hidden">
+            <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
+            <div class="relative z-10 max-w-3xl">
+                <h2 class="text-2xl md:text-4xl font-extrabold text-white leading-tight">Analisis Keputusan Multikriteria dengan FUCOM & VIKOR</h2>
+                <p class="mt-3 text-slate-300 leading-relaxed text-sm md:text-base">
+                    Sistem ini mengkombinasikan metode pembobotan kriteria **FUCOM (Full Consistency Method)** dan metode perankingan alternatif **VIKOR (ViseKriterijumska Optimizacija I Kompromisno Resenje)** untuk mencari solusi kompromi terbaik dalam berbagai permasalahan keputusan yang rumit.
+                </p>
+            </div>
+        </div>
+
+        <!-- STEP 1: UPLOAD FILE -->
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            
+            <div class="lg:col-span-1 bg-slate-900/60 backdrop-blur-md rounded-2xl p-6 border border-slate-800 flex flex-col gap-5">
+                <div>
+                    <span class="text-indigo-400 text-xs font-bold uppercase tracking-wider">Langkah 1</span>
+                    <h3 class="text-lg font-bold text-white mt-1">Unggah Dataset</h3>
+                    <p class="text-xs text-slate-400 mt-1">Unggah file Excel (.xlsx atau .xls) berisi data alternatif dan penilaian kriteria Anda.</p>
+                </div>
+                
+                <!-- Dropzone Area -->
+                <div id="drop-zone" class="border-2 border-dashed border-slate-700 hover:border-indigo-500/80 bg-slate-950/40 hover:bg-indigo-950/10 rounded-xl p-8 text-center cursor-pointer transition-all duration-300 group flex flex-col items-center justify-center min-h-[200px]">
+                    <input type="file" id="file-input" class="hidden" accept=".xlsx, .xls">
+                    <div class="p-4 bg-slate-900 text-indigo-400 group-hover:text-indigo-300 rounded-full border border-slate-800 shadow-md group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                        </svg>
+                    </div>
+                    <span class="mt-4 text-sm font-semibold text-white">Drag & Drop file Anda di sini</span>
+                    <span class="mt-1 text-xs text-slate-400">Atau klik untuk menelusuri file</span>
+                    <span class="mt-3 text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded border border-slate-700">Maks. 16MB</span>
+                </div>
+                
+                <!-- File Info Card (Hidden by default) -->
+                <div id="file-info-card" class="hidden bg-slate-950/60 rounded-xl p-4 border border-slate-800/80 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                        </div>
+                        <div class="truncate max-w-[150px] sm:max-w-[200px]">
+                            <p id="info-filename" class="text-sm font-medium text-white truncate"></p>
+                            <p id="info-filesize" class="text-[11px] text-slate-400 mt-0.5"></p>
+                        </div>
+                    </div>
+                    <button id="btn-remove-file" class="text-slate-400 hover:text-rose-400 p-1.5 rounded-lg hover:bg-slate-900 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Preview & Config Section (Hidden until Uploaded) -->
+            <div id="config-section" class="hidden lg:col-span-2 flex flex-col gap-8">
+                
+                
+                <!-- Collapsible Excel Preview -->
+                <div class="bg-slate-900/60 backdrop-blur-md rounded-2xl border border-slate-800 overflow-hidden">
+                    <button id="btn-toggle-preview" class="w-full px-6 py-4 flex items-center justify-between text-left font-bold text-white hover:bg-slate-800/20 transition-colors">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+                            </svg>
+                            Preview Penilaian (5 Baris Pertama)
+                        </span>
+                        <svg id="preview-arrow" class="w-5 h-5 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    
+                    <div id="preview-container" class="border-t border-slate-800/80 overflow-x-auto max-h-[250px]">
+                        <!-- Rendered Excel table here -->
+                    </div>
+                </div>
+                
+                <!-- Main Configurations Card -->
+                <div class="bg-slate-900/60 backdrop-blur-md rounded-2xl p-6 border border-slate-800 flex flex-col gap-6">
+                    <div>
+                        <span class="text-indigo-400 text-xs font-bold uppercase tracking-wider">Langkah 2</span>
+                        <h3 class="text-lg font-bold text-white mt-1">Konfigurasi Keputusan</h3>
+                    </div>
+                    
+                    <!-- Selection of Alternatif Column -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                        <div class="flex flex-col gap-2">
+                            <label for="select-alternatif" class="text-sm font-semibold text-white">Kolom Nama Alternatif</label>
+                            <select id="select-alternatif" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-xl px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none transition-colors">
+                                <!-- Generated options -->
+                            </select>
+                        </div>
+                        
+                        <div class="flex flex-col gap-2">
+                            <label for="select-weight-mode" class="text-sm font-semibold text-white">Metode Bobot Kriteria</label>
+                            <select id="select-weight-mode" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-xl px-4 py-2.5 text-sm focus:border-indigo-500 focus:outline-none transition-colors">
+                                <option value="objective">Objective FUCOM (Rata-rata Normalisasi)</option>
+                                <option value="manual">Input Bobot Langsung / Manual</option>
+                                <option value="subjective">Subjective FUCOM (Penilaian Pakar)</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Criteria configuration panel -->
+                    <div class="border border-slate-800/80 rounded-xl bg-slate-950/40 overflow-hidden">
+                        <div class="bg-slate-950/80 px-4 py-3 border-b border-slate-800 flex justify-between items-center">
+                            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400">Atur Kriteria & Bobot</h4>
+                            <span id="criteria-count-badge" class="text-[10px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded">0 Kriteria Terdeteksi</span>
+                        </div>
+                        
+                        <!-- Criteria config table -->
+                        <div class="overflow-x-auto max-h-[350px]">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-slate-950/20 text-slate-400 border-b border-slate-800/80">
+                                        <th class="p-3">Nama Kriteria</th>
+                                        <th class="p-3 w-[150px]">Sifat (Tipe)</th>
+                                        <th class="p-3 weight-mode-col" id="col-mode-header">Bobot</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="criteria-config-rows" class="divide-y divide-slate-800/50">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- VIKOR parameter (v) -->
+                    <div class="bg-slate-950/30 border border-slate-800/80 rounded-xl p-4 flex flex-col md:flex-row gap-6 items-center justify-between">
+                        <div class="flex-1">
+                            <h4 class="text-sm font-semibold text-white flex items-center gap-1.5">
+                                Koefisien Strategi VIKOR (v)
+                                <span class="text-xs font-mono text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20" id="v-val-badge">0.5</span>
+                            </h4>
+                            <p class="text-xs text-slate-400 mt-1">
+                                Nilai $v$ (0 sampai 1) mengontrol bobot kompromi keputusan. $v > 0.5$ mengutamakan utilitas mayoritas ($S$), sementara $v < 0.5$ mengutamakan penyesalan individu terkecil ($R$). $v = 0.5$ adalah nilai kompromi seimbang.
+                            </p>
+                        </div>
+                        <div class="w-full md:w-48 flex items-center gap-3">
+                            <input type="range" id="vikor-v" min="0" max="1" step="0.05" value="0.5" class="flex-1 accent-indigo-500 h-1.5 bg-slate-800 rounded-lg cursor-pointer">
+                        </div>
+                    </div>
+
+                    <!-- Execute button -->
+                    <div class="flex justify-end gap-3 mt-2">
+                        <button id="btn-calculate" class="w-full md:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-bold text-sm shadow-lg shadow-indigo-600/20 hover:-translate-y-0.5 hover:shadow-indigo-500/30 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Proses Analisis & Perankingan
+                        </button>
+                    </div>
+                    
+                </div>
+            </div>
+        </section>
+
+        <!-- STEP 3: RESULTS (Hidden until calculated) -->
+        <section id="results-section" class="hidden flex flex-col gap-8">
+            
+            <!-- Result Overview cards -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <!-- Best Alternative Card -->
+                <div class="bg-gradient-to-br from-indigo-950/40 to-slate-900 border border-indigo-500/30 rounded-2xl p-6 shadow-xl flex items-center gap-4 relative overflow-hidden group">
+                    <div class="absolute -right-4 -bottom-4 text-indigo-500/5 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-32 h-32" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/>
+                        </svg>
+                    </div>
+                    <div class="p-3.5 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium text-indigo-400">Rekomendasi Utama (A*)</span>
+                        <h4 id="best-alt-title" class="text-lg font-bold text-white mt-1 truncate">Mencari...</h4>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Alternatif peringkat 1 dengan Q terkecil</p>
+                    </div>
+                </div>
+
+                <!-- Compromise Solutions count -->
+                <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-2xl p-6 shadow-xl flex items-center gap-4">
+                    <div class="p-3.5 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium text-amber-400">Solusi Kompromi</span>
+                        <h4 id="compromise-count-title" class="text-lg font-bold text-white mt-1">0 Alternatif</h4>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Memenuhi batas toleransi DQ</p>
+                    </div>
+                </div>
+
+                <!-- S* and S- (Best / Worst Utility) -->
+                <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-2xl p-6 shadow-xl flex items-center gap-4">
+                    <div class="p-3.5 bg-blue-500/10 text-blue-400 rounded-xl border border-blue-500/20">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium text-blue-400 font-mono">Batas Utilitas [S*, S⁻]</span>
+                        <h4 id="bounds-s-title" class="text-sm font-bold text-white mt-1 font-mono">0.00 / 0.00</h4>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Rangkuman nilai utilitas mayoritas</p>
+                    </div>
+                </div>
+
+                <!-- R* and R- (Best / Worst Regret) -->
+                <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800 rounded-2xl p-6 shadow-xl flex items-center gap-4">
+                    <div class="p-3.5 bg-rose-500/10 text-rose-400 rounded-xl border border-rose-500/20">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-xs font-medium text-rose-400 font-mono">Batas Regret [R*, R⁻]</span>
+                        <h4 id="bounds-r-title" class="text-sm font-bold text-white mt-1 font-mono">0.00 / 0.00</h4>
+                        <p class="text-[11px] text-slate-400 mt-0.5">Penyesalan individu terburuk</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Compromise Solution Details Alert -->
+            <div id="compromise-alert-box" class="border rounded-2xl p-5 backdrop-blur-md flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                <div class="flex gap-3 items-start">
+                    <div id="compromise-icon-badge" class="p-2 rounded-lg mt-0.5">
+                        <!-- Dynamic icon -->
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-bold text-white">Analisis Kondisi Kompromi VIKOR</h4>
+                        <p id="compromise-desc" class="text-xs text-slate-400 mt-1 leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Results Content Card -->
+            <div class="bg-slate-900/60 backdrop-blur-md rounded-2xl border border-slate-800 overflow-hidden flex flex-col">
+                
+                <!-- Tabs header -->
+                <div class="bg-slate-950/80 px-6 py-2 border-b border-slate-800 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+                    <nav class="flex gap-2" aria-label="Tabs">
+                        <button onclick="switchTab('tab-ranking')" id="btn-tab-ranking" class="tab-button px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-indigo-500 text-indigo-400 focus:outline-none transition-all cursor-pointer">
+                            Hasil Perankingan
+                        </button>
+                        {% comment %} <button onclick="switchTab('tab-weights')" id="btn-tab-weights" class="tab-button px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white hover:border-slate-700 focus:outline-none transition-all cursor-pointer">
+                            Bobot Kriteria
+                        </button> {% endcomment %}
+                        <button onclick="switchTab('tab-fucom-detail')" id="btn-tab-fucom-detail" class="tab-button px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white hover:border-slate-700 focus:outline-none transition-all cursor-pointer">
+                            Detail FUCOM
+                        </button>
+                        <button onclick="switchTab('tab-matrix')" id="btn-tab-matrix" class="tab-button px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white hover:border-slate-700 focus:outline-none transition-all cursor-pointer">
+                            Matriks Normalisasi Terbobot
+                        </button>
+                    </nav>
+                    
+                    <button id="btn-export-excel" class="w-full sm:w-auto px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-bold text-xs shadow-md shadow-emerald-600/10 hover:shadow-emerald-500/20 active:translate-y-0 transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        Ekspor ke Excel (.xlsx)
+                    </button>
+                </div>
+
+                <!-- Tab Contents -->
+                <div class="p-6">
+                    
+                    <!-- TAB 1: RANKING -->
+                    <div id="tab-ranking" class="tab-content block">
+                        <div class="overflow-x-auto border border-slate-800 rounded-xl bg-slate-950/20">
+                            <table class="w-full text-left border-collapse text-sm">
+                                <thead>
+                                    <tr class="bg-slate-950/50 text-slate-400 border-b border-slate-800">
+                                        <th class="p-4 w-20 text-center font-bold">Peringkat</th>
+                                        <th class="p-4 font-bold">Alternatif</th>
+                                        <th class="p-4 font-mono font-bold text-center">S (Utility)</th>
+                                        <th class="p-4 font-mono font-bold text-center">R (Regret)</th>
+                                        <th class="p-4 font-mono font-bold text-center">Q (Indeks)</th>
+                                        <th class="p-4 font-bold text-center w-[150px]">Keterangan</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-ranking-rows" class="divide-y divide-slate-800/60">
+                                    <!-- Rows generated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- TAB 2: WEIGHTS -->
+                    <div id="tab-weights" class="tab-content hidden grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                        <div class="bg-slate-950/40 border border-slate-800 rounded-xl p-4 min-h-[300px] flex items-center justify-center relative">
+                            <canvas id="chart-weights"></canvas>
+                        </div>
+                        
+                        <div class="border border-slate-800 rounded-xl bg-slate-950/20 overflow-x-auto">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                    <tr class="bg-slate-950/60 text-slate-400 border-b border-slate-800">
+                                        <th class="p-3 font-bold">Kriteria</th>
+                                        <th class="p-3 font-bold">Bobot (Desimal)</th>
+                                        <th class="p-3 font-bold">Bobot (%)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-weights-rows" class="divide-y divide-slate-800/60">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- TAB 3: FUCOM DETAIL -->
+                    <div id="tab-fucom-detail" class="tab-content hidden">
+                        <div id="fucom-detail-empty" class="hidden border border-slate-800 rounded-xl bg-slate-950/20 p-6 text-sm text-slate-400">
+                            Detail urutan prioritas FUCOM tersedia saat menggunakan mode Objective FUCOM.
+                        </div>
+
+                        <div id="fucom-detail-content" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                            <div class="border border-slate-800 rounded-xl bg-slate-950/20 overflow-hidden">
+                                <div class="bg-rose-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white">
+                                    Urutan Prioritas
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left border-collapse text-xs">
+                                        <thead>
+                                            <tr class="bg-amber-500/80 text-slate-950 border-b border-slate-800">
+                                                <th class="p-3 font-bold">Kriteria</th>
+                                                <th class="p-3 font-bold text-right">Nilai Agregat</th>
+                                                <th class="p-3 font-bold">Hasil Urutan</th>
+                                                <th class="p-3 font-bold text-right">Ranking</th>
+                                                <th class="p-3 font-bold">Ket.</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="table-fucom-priority-rows" class="divide-y divide-slate-800/60">
+                                            <!-- Dynamic rows -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="border border-slate-800 rounded-xl bg-slate-950/20 overflow-hidden">
+                                <div class="bg-rose-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white">
+                                    Rasio Prioritas Komparatif
+                                </div>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-left border-collapse text-xs">
+                                        <thead>
+                                            <tr class="bg-amber-500/80 text-slate-950 border-b border-slate-800">
+                                                <th class="p-3 font-bold">Phi</th>
+                                                <th class="p-3 font-bold text-right">Nilai Phi</th>
+                                                <th class="p-3 font-bold">Rasio Kriteria</th>
+                                                <th class="p-3 font-bold">Rasio Bobot</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="table-fucom-ratio-rows" class="divide-y divide-slate-800/60">
+                                            <!-- Dynamic rows -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="xl:col-span-2 border border-slate-800 rounded-xl bg-slate-950/20 overflow-hidden">
+                                <div class="bg-rose-600 px-4 py-2 text-xs font-bold uppercase tracking-wider text-white">
+                                    Menghitung Bobot Konsisten dan Normalisasi
+                                </div>
+                                <div id="fucom-basis-note" class="bg-yellow-300 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-950">
+                                    <!-- Dynamic basis note -->
+                                </div>
+                                <div class="grid grid-cols-1 xl:grid-cols-2 gap-0">
+                                    <div class="overflow-x-auto border-b xl:border-b-0 xl:border-r border-slate-800">
+                                        <table class="w-full text-left border-collapse text-xs">
+                                            <thead>
+                                                <tr class="bg-amber-500/80 text-slate-950 border-b border-slate-800">
+                                                    <th class="p-3 font-bold">Label</th>
+                                                    <th class="p-3 font-bold text-right">Bobot Mentah</th>
+                                                    <th class="p-3 font-bold">Rumus</th>
+                                                    <th class="p-3 font-bold">Kriteria</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table-fucom-consistency-rows" class="divide-y divide-slate-800/60">
+                                                <!-- Dynamic rows -->
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="bg-yellow-300 text-slate-950">
+                                                    <td class="p-3 font-bold">Σwj</td>
+                                                    <td id="fucom-total-raw" class="p-3 font-mono font-bold text-right"></td>
+                                                    <td class="p-3 font-bold">Jumlah Wj</td>
+                                                    <td class="p-3"></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-left border-collapse text-xs">
+                                            <thead>
+                                                <tr class="bg-red-600 text-white border-b border-slate-800">
+                                                    <th colspan="4" class="p-3 font-semibold">
+                                                        Bobot akhir dinormalisasi sehingga total bobot bernilai satu.
+                                                    </th>
+                                                </tr>
+                                                <tr class="bg-amber-500/80 text-slate-950 border-b border-slate-800">
+                                                    <th class="p-3 font-bold">Label</th>
+                                                    <th class="p-3 font-bold text-right">Bobot Normalisasi</th>
+                                                    <th class="p-3 font-bold">Rumus</th>
+                                                    <th class="p-3 font-bold">Kriteria</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="table-fucom-normalized-rows" class="divide-y divide-slate-800/60">
+                                                <!-- Dynamic rows -->
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="bg-yellow-300 text-slate-950">
+                                                    <td class="p-3 font-bold">Jumlah Bobot</td>
+                                                    <td id="fucom-total-normalized" class="p-3 font-mono font-bold text-right"></td>
+                                                    <td class="p-3"></td>
+                                                    <td class="p-3"></td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TAB 4: MATRIX -->
+                    <div id="tab-matrix" class="tab-content hidden">
+                        <p class="text-xs text-slate-400 mb-4 leading-relaxed">
+                            Tabel ini menunjukkan matriks normalisasi terbobot, dihitung dengan rumus: $w_j \frac{|f_j^* - x_{ij}|}{|f_j^* - f_j^-|}$. 
+                            Nilai-nilai ini digunakan untuk menghitung nilai $S_i$ (jumlah baris) dan $R_i$ (nilai maksimum baris).
+                        </p>
+                        <div class="overflow-x-auto border border-slate-800 rounded-xl bg-slate-950/20 max-h-[400px]">
+                            <table class="w-full text-left border-collapse text-xs">
+                                <thead id="table-matrix-header">
+                                    <!-- Dynamic header columns -->
+                                </thead>
+                                <tbody id="table-matrix-rows" class="divide-y divide-slate-800/60">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- PANDUAN CARA PENGGUNAAN -->
+        <section id="cara-penggunaan" class="bg-slate-900/40 rounded-2xl p-6 border border-slate-800/80">
+            <h3 class="text-lg font-bold text-white">Panduan Penggunaan Aplikasi</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+                <div class="flex flex-col gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20 font-bold text-sm">1</div>
+                    <h4 class="text-sm font-semibold text-white">Format File Excel</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Pastikan file Excel memiliki baris pertama sebagai header (nama alternatif dan kriteria). Alternatif biasanya berada di kolom pertama. Seluruh kolom penilaian kriteria harus bernilai angka.
+                    </p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20 font-bold text-sm">2</div>
+                    <h4 class="text-sm font-semibold text-white">Tentukan Sifat Kriteria</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        Kriteria **Benefit** menandakan semakin tinggi nilai semakin baik (misalnya IPK, Prestasi). Kriteria **Cost** menandakan semakin rendah nilai semakin baik (misalnya Tagihan Listrik, Income).
+                    </p>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20 font-bold text-sm">3</div>
+                    <h4 class="text-sm font-semibold text-white">Pilih Mode Bobot FUCOM</h4>
+                    <p class="text-xs text-slate-400 leading-relaxed">
+                        - **Objective**: Bobot dihitung otomatis dari rata-rata data.<br>
+                        - **Manual**: Masukkan bobot manual Anda.<br>
+                        - **Subjective**: Urutkan prioritas kriteria dan masukkan rasio $\varphi$.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-20 border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        <p>© 2026 MCDM DSS - FUCOM & VIKOR. Dibuat dengan Flask & Tailwind CSS v4.</p>
+    </footer>
+
+    <!-- JS App Logic -->
+    <script>
+        let currentSessionId = null;
+        let columnsList = [];
+        let potentialCriteria = [];
+        let criteriaWeightsChart = null;
+        let activeTab = 'tab-ranking';
+        let fullDataPreview = [];
+
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const fileInfoCard = document.getElementById('file-info-card');
+        const infoFilename = document.getElementById('info-filename');
+        const infoFilesize = document.getElementById('info-filesize');
+        const configSection = document.getElementById('config-section');
+        const previewContainer = document.getElementById('preview-container');
+        const selectAlternatif = document.getElementById('select-alternatif');
+        const selectWeightMode = document.getElementById('select-weight-mode');
+        const criteriaConfigRows = document.getElementById('criteria-config-rows');
+        const criteriaCountBadge = document.getElementById('criteria-count-badge');
+        const vikorV = document.getElementById('vikor-v');
+        const vValBadge = document.getElementById('v-val-badge');
+        const btnCalculate = document.getElementById('btn-calculate');
+        const resultsSection = document.getElementById('results-section');
+        const btnExportExcel = document.getElementById('btn-export-excel');
+        const btnRemoveFile = document.getElementById('btn-remove-file');
+        
+        // Tab switching buttons
+        const tabButtons = {
+            'tab-ranking': document.getElementById('btn-tab-ranking'),
+            'tab-weights': document.getElementById('btn-tab-weights'),
+            'tab-fucom-detail': document.getElementById('btn-tab-fucom-detail'),
+            'tab-matrix': document.getElementById('btn-tab-matrix')
+        };
+        const tabContents = {
+            'tab-ranking': document.getElementById('tab-ranking'),
+            'tab-weights': document.getElementById('tab-weights'),
+            'tab-fucom-detail': document.getElementById('tab-fucom-detail'),
+            'tab-matrix': document.getElementById('tab-matrix')
+        };
+
+        // Collapsible preview
+        const btnTogglePreview = document.getElementById('btn-toggle-preview');
+        const previewArrow = document.getElementById('preview-arrow');
+        const previewWrapper = document.getElementById('preview-container');
+        let isPreviewCollapsed = false;
+
+        btnTogglePreview.addEventListener('click', () => {
+            isPreviewCollapsed = !isPreviewCollapsed;
+            if (isPreviewCollapsed) {
+                previewWrapper.classList.add('hidden');
+                previewArrow.classList.add('-rotate-90');
+            } else {
+                previewWrapper.classList.remove('hidden');
+                previewArrow.classList.remove('-rotate-90');
+            }
+        });
+
+        // Trigger vikor strategy slider change label
+        vikorV.addEventListener('input', (e) => {
+            vValBadge.textContent = parseFloat(e.target.value).toFixed(2);
+        });
+
+        // Drag and drop event listeners
+        dropZone.addEventListener('click', () => fileInput.click());
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-indigo-500', 'bg-indigo-950/10');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-indigo-500', 'bg-indigo-950/10');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-indigo-500', 'bg-indigo-950/10');
+            if (e.dataTransfer.files.length > 0) {
+                handleFileUpload(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        btnRemoveFile.addEventListener('click', () => {
+            resetFileState();
+        });
+
+        function resetFileState() {
+            currentSessionId = null;
+            columnsList = [];
+            potentialCriteria = [];
+            fullDataPreview = [];
+            fileInput.value = '';
+            
+            fileInfoCard.classList.add('hidden');
+            dropZone.classList.remove('hidden');
+            configSection.classList.add('hidden');
+            resultsSection.classList.add('hidden');
+        }
+
+        // Upload and parse excel file
+        async function handleFileUpload(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            // Display loading text or state
+            infoFilename.textContent = file.name;
+            infoFilesize.textContent = (file.size / 1024).toFixed(1) + ' KB';
+            
+            try {
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    alert(data.error || 'Terjadi kesalahan saat mengunggah file.');
+                    resetFileState();
+                    return;
+                }
+                
+                currentSessionId = data.session_id;
+                columnsList = data.columns;
+                potentialCriteria = data.potential_criteria;
+                fullDataPreview = data.preview;
+
+                // Show file info card & hide upload box
+                dropZone.classList.add('hidden');
+                fileInfoCard.classList.remove('hidden');
+
+                // Render dynamic configuration panels
+                renderConfigSection(data);
+                
+                // Show configurations card
+                configSection.classList.remove('hidden');
+                resultsSection.classList.add('hidden'); // Hide any previous results
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('Gagal menghubungkan ke server.');
+                resetFileState();
+            }
+        }
+
+        // Render configuration options
+        function renderConfigSection(data) {
+            // 1. Render Alternatif Column Selector Options
+            selectAlternatif.innerHTML = '';
+            data.columns.forEach(col => {
+                const opt = document.createElement('option');
+                opt.value = col;
+                opt.textContent = col;
+                if (col === data.alternatif_rec) {
+                    opt.selected = true;
+                }
+                selectAlternatif.appendChild(opt);
+            });
+
+            // 2. Render Excel Preview Table
+            renderPreviewTable(data.columns, data.preview);
+
+            // 3. Render Criteria rows
+            renderCriteriaRows();
+        }
+
+        // Preview Table Rendering
+        function renderPreviewTable(cols, rows) {
+            previewContainer.innerHTML = '';
+            if (rows.length === 0) {
+                previewContainer.innerHTML = '<div class="p-6 text-center text-slate-400 text-xs">Tidak ada data pratinjau.</div>';
+                return;
+            }
+
+            const table = document.createElement('table');
+            table.className = 'w-full border-collapse text-left text-xs text-slate-300';
+            
+            // Header
+            const thead = document.createElement('thead');
+            thead.className = 'sticky top-0 bg-slate-950 text-slate-400 font-bold border-b border-slate-800';
+            const trHead = document.createElement('tr');
+            cols.forEach(col => {
+                const th = document.createElement('th');
+                th.className = 'p-3 whitespace-nowrap';
+                th.textContent = col;
+                trHead.appendChild(th);
+            });
+            thead.appendChild(trHead);
+            table.appendChild(thead);
+
+            // Body
+            const tbody = document.createElement('tbody');
+            tbody.className = 'divide-y divide-slate-800/40 bg-slate-950/20';
+            rows.forEach((row, i) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/10 transition-colors';
+                cols.forEach(col => {
+                    const td = document.createElement('td');
+                    td.className = 'p-3 whitespace-nowrap';
+                    td.textContent = row[col] !== undefined ? row[col] : '-';
+                    tr.appendChild(td);
+                });
+                tbody.appendChild(tr);
+            });
+            table.appendChild(tbody);
+            previewContainer.appendChild(table);
+        }
+
+        // Handle alternatif selector change to redraw criteria lists
+        selectAlternatif.addEventListener('change', () => {
+            renderCriteriaRows();
+        });
+
+        // Toggle Weight Method config columns dynamically
+        selectWeightMode.addEventListener('change', () => {
+            renderCriteriaRows();
+        });
+
+        // Render Criteria Configurations Table rows
+        function renderCriteriaRows() {
+            const selectedAlt = selectAlternatif.value;
+            const weightMode = selectWeightMode.value;
+            
+            // Filter criteria columns (all numeric columns except the selected alternatif column)
+            const criteria = columnsList.filter(col => col !== selectedAlt && potentialCriteria.includes(col));
+            
+            criteriaCountBadge.textContent = `${criteria.length} Kriteria Terdeteksi`;
+            criteriaConfigRows.innerHTML = '';
+            
+            // Update table header column for weight based on selectWeightMode
+            const colModeHeader = document.getElementById('col-mode-header');
+            if (weightMode === 'objective') {
+                colModeHeader.textContent = 'Bobot (Dihitung Otomatis)';
+            } else if (weightMode === 'manual') {
+                colModeHeader.textContent = 'Bobot Manual';
+            } else if (weightMode === 'subjective') {
+                colModeHeader.textContent = 'Peringkat & Nilai Rasio (Phi)';
+            }
+
+            if (criteria.length === 0) {
+                criteriaConfigRows.innerHTML = '<tr><td colspan="3" class="p-6 text-center text-slate-400 text-xs">Pilih nama alternatif yang sesuai untuk memunculkan kriteria.</td></tr>';
+                return;
+            }
+
+            criteria.forEach((col, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/10 transition-colors';
+                tr.dataset.criterionName = col;
+
+                // 1. Column Name
+                const tdName = document.createElement('td');
+                tdName.className = 'p-3 font-semibold text-white whitespace-nowrap';
+                tdName.textContent = col;
+                tr.appendChild(tdName);
+
+                // 2. Type Selector (Benefit / Cost)
+                const tdType = document.createElement('td');
+                tdType.className = 'p-3';
+                // Default awal umum; setiap kriteria tetap bisa diubah lewat dropdown.
+                const defaultType = 'Benefit';
+                
+                tdType.innerHTML = `
+                    <select class="criteria-type-select bg-slate-950 border border-slate-800 text-xs text-slate-300 rounded-lg px-2.5 py-1.5 focus:border-indigo-500 focus:outline-none transition-colors w-28">
+                        <option value="Benefit" ${defaultType === 'Benefit' ? 'selected' : ''}>Benefit</option>
+                        <option value="Cost" ${defaultType === 'Cost' ? 'selected' : ''}>Cost</option>
+                    </select>
+                `;
+                tr.appendChild(tdType);
+
+                // 3. Weight Settings based on weightMode
+                const tdWeight = document.createElement('td');
+                tdWeight.className = 'p-3';
+
+                if (weightMode === 'objective') {
+                    tdWeight.innerHTML = `<span class="text-slate-400 italic text-[11px]">Dihitung oleh FUCOM objektif</span>`;
+                } else if (weightMode === 'manual') {
+                    // Prepopulate with mock balanced weight
+                    const defWeight = (1.0 / criteria.length).toFixed(4);
+                    tdWeight.innerHTML = `
+                        <input type="number" step="0.001" min="0" value="${defWeight}" class="criteria-manual-weight-input bg-slate-950 border border-slate-800 text-xs text-white rounded-lg px-3 py-1.5 focus:border-indigo-500 focus:outline-none transition-colors w-24">
+                    `;
+                } else if (weightMode === 'subjective') {
+                    // Prepopulate Rank: 1, 2, 3...
+                    const defRank = index + 1;
+                    // Prepopulate Phi: 1.0 (except the last item which has no comparison)
+                    const isLast = (index === criteria.length - 1);
+                    const phiInputHtml = isLast ? 
+                        `<span class="text-slate-500 font-mono text-[10px]">- (Terakhir)</span>` : 
+                        `<input type="number" step="0.01" min="1" value="1.00" class="criteria-phi-input bg-slate-950 border border-slate-800 text-xs text-white rounded-lg px-3 py-1.5 focus:border-indigo-500 focus:outline-none transition-colors w-24">`;
+
+                    tdWeight.innerHTML = `
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] text-slate-400">Rank:</span>
+                                <input type="number" min="1" max="${criteria.length}" value="${defRank}" class="criteria-rank-input bg-slate-950 border border-slate-800 text-xs text-white rounded-lg px-2 py-1.5 focus:border-indigo-500 focus:outline-none transition-colors w-14 text-center">
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-[10px] text-slate-400">Phi (${index+1}/${index+2}):</span>
+                                ${phiInputHtml}
+                            </div>
+                        </div>
+                    `;
+                }
+                tr.appendChild(tdWeight);
+
+                criteriaConfigRows.appendChild(tr);
+            });
+        }
+
+        // TAB SWITCHING FUNCTION
+        function switchTab(tabId) {
+            activeTab = tabId;
+            Object.keys(tabButtons).forEach(id => {
+                if (id === tabId) {
+                    tabButtons[id].className = "tab-button px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-indigo-500 text-indigo-400 focus:outline-none transition-all cursor-pointer";
+                    tabContents[id].classList.remove('hidden');
+                    tabContents[id].classList.add('block');
+                } else {
+                    tabButtons[id].className = "tab-button px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white hover:border-slate-700 focus:outline-none transition-all cursor-pointer";
+                    tabContents[id].classList.remove('block');
+                    tabContents[id].classList.add('hidden');
+                }
+            });
+            // Update weights chart layout if switching to chart tab
+            if (tabId === 'tab-weights' && criteriaWeightsChart) {
+                criteriaWeightsChart.resize();
+            }
+        }
+
+        // TRIGGER CALCULATIONS
+        btnCalculate.addEventListener('click', async () => {
+            const selectedAlt = selectAlternatif.value;
+            const weightMode = selectWeightMode.value;
+            const vVal = parseFloat(vikorV.value);
+            
+            if (!currentSessionId) {
+                alert('Silakan upload file dataset terlebih dahulu.');
+                return;
+            }
+
+            // Gather configurations from criteria table
+            const criteriaConfigs = [];
+            const rows = criteriaConfigRows.querySelectorAll('tr[data-criterion-name]');
+            
+            let validationFailed = false;
+
+            rows.forEach((row) => {
+                const name = row.dataset.criterionName;
+                const type = row.querySelector('.criteria-type-select').value;
+                const config = { name, type };
+
+                if (weightMode === 'manual') {
+                    const weightVal = parseFloat(row.querySelector('.criteria-manual-weight-input').value);
+                    if (isNaN(weightVal) || weightVal < 0) {
+                        alert(`Bobot kriteria ${name} tidak valid.`);
+                        validationFailed = true;
+                    }
+                    config.manual_weight = weightVal;
+                } else if (weightMode === 'subjective') {
+                    const rankVal = parseInt(row.querySelector('.criteria-rank-input').value);
+                    const phiInput = row.querySelector('.criteria-phi-input');
+                    const phiVal = phiInput ? parseFloat(phiInput.value) : 1.0;
+                    
+                    if (isNaN(rankVal) || rankVal < 1) {
+                        alert(`Peringkat kriteria ${name} tidak valid.`);
+                        validationFailed = true;
+                    }
+                    if (phiInput && (isNaN(phiVal) || phiVal < 1.0)) {
+                        alert(`Nilai perbandingan Phi kriteria ${name} harus >= 1.0.`);
+                        validationFailed = true;
+                    }
+                    config.rank = rankVal;
+                    config.phi = phiVal;
+                }
+
+                criteriaConfigs.push(config);
+            });
+
+            if (validationFailed) return;
+
+            // Display loading state
+            btnCalculate.innerHTML = `
+                <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Menghitung Analisis MCDM...
+            `;
+            btnCalculate.disabled = true;
+
+            try {
+                const response = await fetch('/calculate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        session_id: currentSessionId,
+                        alternatif_col: selectedAlt,
+                        weight_mode: weightMode,
+                        criteria_configs: criteriaConfigs,
+                        v: vVal
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    alert(data.error || 'Terjadi kesalahan saat memproses perhitungan.');
+                    return;
+                }
+
+                // Show results section
+                resultsSection.classList.remove('hidden');
+                
+                // Render results contents
+                renderResultsData(data, criteriaConfigs, selectedAlt);
+                
+                // Scroll to results smoothly
+                resultsSection.scrollIntoView({ behavior: 'smooth' });
+
+            } catch (error) {
+                console.error('Calculation error:', error);
+                alert('Gagal menghubungkan ke server.');
+            } finally {
+                btnCalculate.innerHTML = `
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                    </svg>
+                    Proses Analisis & Perankingan
+                `;
+                btnCalculate.disabled = false;
+            }
+        });
+
+        // RENDER RESULTS CONTENTS
+        function renderResultsData(data, criteriaConfigs, alternatifColName) {
+            const rankings = data.rankings;
+            const bobot = data.bobot;
+            const ref = data.ref_values;
+            const compAlts = data.compromise_solutions;
+            const compDetails = data.compromise_details;
+
+            // 1. Update Overview Cards
+            const bestAlt = rankings[0]['ALTERNATIF'];
+            document.getElementById('best-alt-title').textContent = bestAlt;
+            document.getElementById('best-alt-title').title = bestAlt;
+            
+            document.getElementById('compromise-count-title').textContent = `${compAlts.length} Alternatif`;
+            
+            document.getElementById('bounds-s-title').textContent = `${ref.S_star.toFixed(4)} / ${ref.S_minus.toFixed(4)}`;
+            document.getElementById('bounds-r-title').textContent = `${ref.R_star.toFixed(4)} / ${ref.R_minus.toFixed(4)}`;
+
+            // 2. Render Compromise Alert Box Style & Info
+            const compBox = document.getElementById('compromise-alert-box');
+            const compIconBadge = document.getElementById('compromise-icon-badge');
+            const compDesc = document.getElementById('compromise-desc');
+            
+            compDesc.textContent = compDetails;
+
+            // If compromise contains multiple items or conditions are not met, show warning state
+            const isSinglePerfect = (compAlts.length === 1 && compDetails.includes("terpenuhi"));
+            if (isSinglePerfect) {
+                compBox.className = "border border-emerald-500/20 bg-emerald-500/5 rounded-2xl p-5 backdrop-blur-md flex flex-col md:flex-row gap-4 items-start md:items-center justify-between";
+                compIconBadge.className = "p-2 bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20";
+                compIconBadge.innerHTML = `
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                `;
+            } else {
+                compBox.className = "border border-amber-500/20 bg-amber-500/5 rounded-2xl p-5 backdrop-blur-md flex flex-col md:flex-row gap-4 items-start md:items-center justify-between";
+                compIconBadge.className = "p-2 bg-amber-500/10 text-amber-400 rounded-lg border border-amber-500/20";
+                compIconBadge.innerHTML = `
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                `;
+            }
+
+            // 3. TAB 1: Render Rankings Table Rows
+            const tableRankingRows = document.getElementById('table-ranking-rows');
+            tableRankingRows.innerHTML = '';
+            
+            rankings.forEach((row, i) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/10 transition-colors';
+                
+                // Highlight Rank 1
+                const isRank1 = (row.Ranking === 1);
+                const isCompromise = compAlts.includes(row.ALTERNATIF);
+                
+                let rankBadgeClass = "text-slate-400 bg-slate-800/40 border border-slate-700";
+                if (row.Ranking === 1) rankBadgeClass = "text-indigo-400 bg-indigo-500/10 border border-indigo-500/30 font-bold scale-105 shadow-md shadow-indigo-500/5";
+                else if (row.Ranking === 2) rankBadgeClass = "text-slate-300 bg-slate-800 border border-slate-600 font-bold";
+                else if (row.Ranking === 3) rankBadgeClass = "text-amber-600/80 bg-amber-500/10 border border-amber-500/20 font-bold";
+
+                let compBadgeHtml = "";
+                if (isCompromise) {
+                    compBadgeHtml = `<span class="inline-flex items-center gap-1 text-[10px] bg-amber-500/10 text-amber-400 px-2 py-0.5 rounded border border-amber-500/20">Solusi Kompromi</span>`;
+                }
+
+                tr.innerHTML = `
+                    <td class="p-4 text-center">
+                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-xs ${rankBadgeClass}">
+                            ${row.Ranking}
+                        </span>
+                    </td>
+                    <td class="p-4 font-semibold text-white whitespace-nowrap">${row.ALTERNATIF}</td>
+                    <td class="p-4 text-center font-mono text-slate-300">${row.S.toFixed(10)}</td>
+                    <td class="p-4 text-center font-mono text-slate-300">${row.R.toFixed(10)}</td>
+                    <td class="p-4 text-center font-mono font-bold text-white">${row.Q.toFixed(10)}</td>
+                    <td class="p-4 text-center whitespace-nowrap">${compBadgeHtml}</td>
+                `;
+                tableRankingRows.appendChild(tr);
+            });
+
+            // 4. TAB 2: Render Weights Table Rows & Chart
+            const tableWeightsRows = document.getElementById('table-weights-rows');
+            tableWeightsRows.innerHTML = '';
+            const labels = [];
+            const weightValues = [];
+
+            Object.entries(bobot).forEach(([k, w]) => {
+                labels.push(k);
+                weightValues.push(w);
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/10 transition-colors';
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-white">${k}</td>
+                    <td class="p-3 font-mono text-slate-300">${w.toFixed(10)}</td>
+                    <td class="p-3 font-mono font-bold text-indigo-400">${(w*100).toFixed(4)}%</td>
+                `;
+                tableWeightsRows.appendChild(tr);
+            });
+
+            // Draw Chart.js
+            drawWeightsChart(labels, weightValues);
+
+            // 5. TAB 3: Render FUCOM priority and phi details
+            const fucomDetails = data.fucom_details || { available: false, priority_rows: [], ratio_rows: [] };
+            const fucomEmpty = document.getElementById('fucom-detail-empty');
+            const fucomContent = document.getElementById('fucom-detail-content');
+            const tableFucomPriorityRows = document.getElementById('table-fucom-priority-rows');
+            const tableFucomRatioRows = document.getElementById('table-fucom-ratio-rows');
+            const tableFucomConsistencyRows = document.getElementById('table-fucom-consistency-rows');
+            const tableFucomNormalizedRows = document.getElementById('table-fucom-normalized-rows');
+            const formatFucomNumber = (value) => Number(value).toFixed(10).replace(/\.?0+$/, '');
+            tableFucomPriorityRows.innerHTML = '';
+            tableFucomRatioRows.innerHTML = '';
+            tableFucomConsistencyRows.innerHTML = '';
+            tableFucomNormalizedRows.innerHTML = '';
+
+            if (!fucomDetails.available) {
+                fucomEmpty.classList.remove('hidden');
+                fucomContent.classList.add('hidden');
+            } else {
+                fucomEmpty.classList.add('hidden');
+                fucomContent.classList.remove('hidden');
+
+                fucomDetails.priority_rows.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-800/10 transition-colors';
+                    tr.innerHTML = `
+                        <td class="p-3 font-semibold text-white">${row.kriteria}</td>
+                        <td class="p-3 font-mono text-right text-slate-300">${formatFucomNumber(row.nilai_agregat)}</td>
+                        <td class="p-3 font-semibold text-yellow-300">${row.hasil_urutan || ''}</td>
+                        <td class="p-3 font-mono text-right text-slate-300">${row.ranking || ''}</td>
+                        <td class="p-3 text-slate-400">${row.keterangan || ''}</td>
+                    `;
+                    tableFucomPriorityRows.appendChild(tr);
+                });
+
+                fucomDetails.ratio_rows.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-800/10 transition-colors';
+                    tr.innerHTML = `
+                        <td class="p-3 font-semibold text-white">${row.phi}</td>
+                        <td class="p-3 font-mono text-right text-slate-300">${formatFucomNumber(row.nilai_phi)}</td>
+                        <td class="p-3 font-mono text-sky-300">${row.rasio_kriteria}</td>
+                        <td class="p-3 font-mono text-slate-300">${row.rasio_bobot}</td>
+                    `;
+                    tableFucomRatioRows.appendChild(tr);
+                });
+
+                document.getElementById('fucom-basis-note').textContent =
+                    `Dihitung mulai dari kriteria terakhir sebagai basis ${fucomDetails.basis_label} = 1`;
+
+                fucomDetails.consistency_rows.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-800/10 transition-colors';
+                    tr.innerHTML = `
+                        <td class="p-3 font-semibold text-white">${row.label}</td>
+                        <td class="p-3 font-mono text-right text-slate-300">${formatFucomNumber(row.raw_weight)}</td>
+                        <td class="p-3 font-mono text-sky-300">${row.formula}</td>
+                        <td class="p-3 font-semibold text-yellow-300">${row.criteria}</td>
+                    `;
+                    tableFucomConsistencyRows.appendChild(tr);
+                });
+
+                fucomDetails.normalized_rows.forEach(row => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-800/10 transition-colors';
+                    tr.innerHTML = `
+                        <td class="p-3 font-semibold text-white">${row.label}</td>
+                        <td class="p-3 font-mono text-right text-slate-300">${formatFucomNumber(row.normalized_weight)}</td>
+                        <td class="p-3 font-mono text-sky-300">${row.formula}</td>
+                        <td class="p-3 font-semibold text-yellow-300">${row.criteria}</td>
+                    `;
+                    tableFucomNormalizedRows.appendChild(tr);
+                });
+
+                document.getElementById('fucom-total-raw').textContent =
+                    formatFucomNumber(fucomDetails.total_raw_weight);
+                document.getElementById('fucom-total-normalized').textContent =
+                    formatFucomNumber(fucomDetails.total_normalized_weight);
+            }
+
+            // 6. TAB 4: Render Normalization Matrix Header & Rows
+            const tableMatrixHeader = document.getElementById('table-matrix-header');
+            tableMatrixHeader.innerHTML = '';
+            
+            // Header columns
+            const trH = document.createElement('tr');
+            trH.className = 'bg-slate-950/60 text-slate-400 border-b border-slate-800';
+            
+            const thAlt = document.createElement('th');
+            thAlt.className = 'p-3 font-bold';
+            thAlt.textContent = 'Alternatif';
+            trH.appendChild(thAlt);
+            
+            labels.forEach(colName => {
+                const th = document.createElement('th');
+                th.className = 'p-3 font-bold font-mono text-center';
+                th.textContent = `${colName} (${bobot[colName].toFixed(4)})`;
+                trH.appendChild(th);
+            });
+            tableMatrixHeader.appendChild(trH);
+
+            const tableMatrixRows = document.getElementById('table-matrix-rows');
+            tableMatrixRows.innerHTML = '';
+
+            const weightedMatrix = data.weighted_matrix;
+            weightedMatrix.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/10 transition-colors';
+                
+                const tdAlt = document.createElement('td');
+                tdAlt.className = 'p-3 font-semibold text-white whitespace-nowrap';
+                tdAlt.textContent = row['ALTERNATIF'];
+                tr.appendChild(tdAlt);
+                
+                labels.forEach(colName => {
+                    const td = document.createElement('td');
+                    td.className = 'p-3 text-center font-mono text-slate-300';
+                    td.textContent = row[colName] !== undefined ? row[colName].toFixed(10) : '0.0000000000';
+                    tr.appendChild(td);
+                });
+                tableMatrixRows.appendChild(tr);
+            });
+        }
+
+        // Draw weights chart helper
+        function drawWeightsChart(labels, values) {
+            if (criteriaWeightsChart) {
+                criteriaWeightsChart.destroy();
+            }
+
+            const ctx = document.getElementById('chart-weights').getContext('2d');
+            criteriaWeightsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Bobot Kriteria',
+                        data: values,
+                        backgroundColor: 'rgba(99, 102, 241, 0.4)',
+                        borderColor: 'rgba(99, 102, 241, 0.8)',
+                        borderWidth: 2,
+                        borderRadius: 6,
+                        hoverBackgroundColor: 'rgba(99, 102, 241, 0.7)',
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return 'Bobot: ' + (context.raw * 100).toFixed(4) + '%';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: {
+                                color: 'rgba(148, 163, 184, 0.7)',
+                                callback: function(value) {
+                                    return (value * 100).toFixed(0) + '%';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: 'rgba(148, 163, 184, 0.7)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // EXPORT TO EXCEL
+        btnExportExcel.addEventListener('click', async () => {
+            if (!currentSessionId) return;
+
+            btnExportExcel.disabled = true;
+            btnExportExcel.innerHTML = `
+                <svg class="animate-spin h-3.5 w-3.5 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Mengekspor...
+            `;
+
+            try {
+                const response = await fetch('/export', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ session_id: currentSessionId })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok && data.download_url) {
+                    // Trigger download
+                    window.location.href = data.download_url;
+                } else {
+                    alert(data.error || 'Gagal mengekspor data.');
+                }
+
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('Gagal menghubungkan ke server.');
+            } finally {
+                btnExportExcel.disabled = false;
+                btnExportExcel.innerHTML = `
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    Ekspor ke Excel (.xlsx)
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
