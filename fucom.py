@@ -72,7 +72,7 @@ def hitung_fucom_objektif(df, jenis_kriteria):
     bobot_urut_asli = {k: hasil_bobot[k] for k in jenis_kriteria.keys()}
     return bobot_urut_asli
 
-def hitung_vikor(df, jenis_kriteria, bobot, nama_kolom_alternatif='ALTERNATIF', v=0.5):
+def hitung_vikor(df, jenis_kriteria, bobot, nama_kolom_alternatif='ALTERNATIF', v=0.10):
     """
     Menghitung perankingan menggunakan metode VIKOR.
     """
@@ -137,6 +137,23 @@ def hitung_vikor(df, jenis_kriteria, bobot, nama_kolom_alternatif='ALTERNATIF', 
 # BAGIAN EKSEKUSI UTAMA
 # ==========================================
 if __name__ == "__main__":
+    import argparse
+    import sys
+
+    parser = argparse.ArgumentParser(description="Program SPK menggunakan FUCOM dan VIKOR.")
+    parser.add_argument(
+        '--v', 
+        type=float, 
+        default=0.10, 
+        help="Koefisien strategi VIKOR (v) antara 0.0 sampai 1.0 (default: 0.10)"
+    )
+    args = parser.parse_args()
+    
+    v_val = args.v
+    if not (0.0 <= v_val <= 1.0):
+        print("Error: Nilai v harus berada di antara 0.0 dan 1.0.")
+        sys.exit(1)
+
     # 1. Tentukan nama file Excel-mu di sini
     # Pastikan file excel berada di folder (direktori) yang sama dengan script python ini
     nama_file_excel = 'Book1.xlsx' 
@@ -163,7 +180,8 @@ if __name__ == "__main__":
         bobot_fucom = hitung_fucom_objektif(df, jenis_kriteria)
         
         # 2. Masukkan bobot tersebut ke dalam algoritma VIKOR
-        hasil_ranking = hitung_vikor(df, jenis_kriteria, bobot=bobot_fucom, nama_kolom_alternatif='ALTERNATIF', v=0.5)
+        print(f"Menghitung perankingan VIKOR dengan v = {v_val}...")
+        hasil_ranking = hitung_vikor(df, jenis_kriteria, bobot=bobot_fucom, nama_kolom_alternatif='ALTERNATIF', v=v_val)
         
         print("\n[3] --- HASIL PERANKINGAN VIKOR ---")
         # Format angka agar lebih rapi (menampilkan 4 angka di belakang koma)

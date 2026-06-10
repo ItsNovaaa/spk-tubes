@@ -204,7 +204,7 @@
                         <div class="flex-1">
                             <h4 class="text-sm font-semibold text-white flex items-center gap-1.5">
                                 Koefisien Strategi VIKOR (v)
-                                <span class="text-xs font-mono text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20" id="v-val-badge">0.5</span>
+                                <span class="text-xs font-mono text-indigo-400 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/20" id="v-val-badge">0.50</span>
                             </h4>
                             <p class="text-xs text-slate-400 mt-1">
                                 Nilai $v$ (0 sampai 1) mengontrol bobot kompromi keputusan. $v > 0.5$ mengutamakan utilitas mayoritas ($S$), sementara $v < 0.5$ mengutamakan penyesalan individu terkecil ($R$). $v = 0.5$ adalah nilai kompromi seimbang.
@@ -318,9 +318,9 @@
                         <button onclick="switchTab('tab-ranking')" id="btn-tab-ranking" class="tab-button px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-indigo-500 text-indigo-400 focus:outline-none transition-all cursor-pointer">
                             Hasil Perankingan
                         </button>
-                        {% comment %} <button onclick="switchTab('tab-weights')" id="btn-tab-weights" class="tab-button px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white hover:border-slate-700 focus:outline-none transition-all cursor-pointer">
+                        <button onclick="switchTab('tab-weights')" id="btn-tab-weights" class="tab-button px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white hover:border-slate-700 focus:outline-none transition-all cursor-pointer">
                             Bobot Kriteria
-                        </button> {% endcomment %}
+                        </button>
                         <button onclick="switchTab('tab-fucom-detail')" id="btn-tab-fucom-detail" class="tab-button px-4 py-3 text-xs font-bold uppercase tracking-wider border-b-2 border-transparent text-slate-400 hover:text-white hover:border-slate-700 focus:outline-none transition-all cursor-pointer">
                             Detail FUCOM
                         </button>
@@ -342,6 +342,10 @@
                     
                     <!-- TAB 1: RANKING -->
                     <div id="tab-ranking" class="tab-content block">
+                        <div class="mb-3 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                            <span class="font-semibold text-slate-300">Parameter VIKOR aktif</span>
+                            <span id="ranking-v-note" class="font-mono text-indigo-300 bg-indigo-500/10 border border-indigo-500/20 rounded-lg px-2 py-1">v = -</span>
+                        </div>
                         <div class="overflow-x-auto border border-slate-800 rounded-xl bg-slate-950/20">
                             <table class="w-full text-left border-collapse text-sm">
                                 <thead>
@@ -565,6 +569,10 @@
         let criteriaWeightsChart = null;
         let activeTab = 'tab-ranking';
         let fullDataPreview = [];
+        let debounceTimer = null;
+        let isCalculating = false;
+        let pendingRecalculate = false;
+        let pendingScrollToResults = false;
 
         const dropZone = document.getElementById('drop-zone');
         const fileInput = document.getElementById('file-input');
@@ -615,9 +623,15 @@
             }
         });
 
-        // Trigger vikor strategy slider change label
+        // Trigger vikor strategy slider change label and auto-recalculate
         vikorV.addEventListener('input', (e) => {
             vValBadge.textContent = parseFloat(e.target.value).toFixed(2);
+            if (currentSessionId && !resultsSection.classList.contains('hidden')) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    runCalculation({ scrollToResults: false });
+                }, 250);
+            }
         });
 
         // Drag and drop event listeners
@@ -894,7 +908,13 @@
         }
 
         // TRIGGER CALCULATIONS
-        btnCalculate.addEventListener('click', async () => {
+        async function runCalculation({ scrollToResults = true } = {}) {
+            if (isCalculating) {
+                pendingRecalculate = true;
+                pendingScrollToResults = pendingScrollToResults || scrollToResults;
+                return;
+            }
+
             const selectedAlt = selectAlternatif.value;
             const weightMode = selectWeightMode.value;
             const vVal = parseFloat(vikorV.value);
@@ -944,6 +964,8 @@
 
             if (validationFailed) return;
 
+            isCalculating = true;
+
             // Display loading state
             btnCalculate.innerHTML = `
                 <svg class="animate-spin -ml-1 mr-3 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
@@ -981,7 +1003,9 @@
                 renderResultsData(data, criteriaConfigs, selectedAlt);
                 
                 // Scroll to results smoothly
-                resultsSection.scrollIntoView({ behavior: 'smooth' });
+                if (scrollToResults) {
+                    resultsSection.scrollIntoView({ behavior: 'smooth' });
+                }
 
             } catch (error) {
                 console.error('Calculation error:', error);
@@ -994,8 +1018,18 @@
                     Proses Analisis & Perankingan
                 `;
                 btnCalculate.disabled = false;
+                isCalculating = false;
+
+                if (pendingRecalculate) {
+                    const shouldScroll = pendingScrollToResults;
+                    pendingRecalculate = false;
+                    pendingScrollToResults = false;
+                    runCalculation({ scrollToResults: shouldScroll });
+                }
             }
-        });
+        }
+
+        btnCalculate.addEventListener('click', () => runCalculation({ scrollToResults: true }));
 
         // RENDER RESULTS CONTENTS
         function renderResultsData(data, criteriaConfigs, alternatifColName) {
@@ -1012,6 +1046,7 @@
             
             document.getElementById('compromise-count-title').textContent = `${compAlts.length} Alternatif`;
             
+            document.getElementById('ranking-v-note').textContent = `v = ${Number(ref.v).toFixed(2)}`;
             document.getElementById('bounds-s-title').textContent = `${ref.S_star.toFixed(4)} / ${ref.S_minus.toFixed(4)}`;
             document.getElementById('bounds-r-title').textContent = `${ref.R_star.toFixed(4)} / ${ref.R_minus.toFixed(4)}`;
 

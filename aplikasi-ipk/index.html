@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kalkulator Nilai dan IPK Mahasiswa</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Sistem Pendukung Keputusan Akademik</p>
+          <h1>Kalkulator Nilai dan IPK Mahasiswa</h1>
+          <p class="hero-copy">
+            Olah nilai angka, konversi nilai huruf, hitung bobot mutu per SKS,
+            dan dapatkan IPK secara cepat serta konsisten.
+          </p>
+        </div>
+        <div class="summary-panel" aria-label="Ringkasan IPK">
+          <div class="ipk-display">
+            <span>IPK</span>
+            <strong id="ipkValue">0.00</strong>
+          </div>
+          <div class="summary-grid">
+            <div>
+              <span>Total SKS</span>
+              <strong id="totalSks">0</strong>
+            </div>
+            <div>
+              <span>Total Mutu</span>
+              <strong id="totalMutu">0.00</strong>
+            </div>
+            <div>
+              <span>Mata Kuliah</span>
+              <strong id="totalMatkul">0</strong>
+            </div>
+            <div>
+              <span>Status</span>
+              <strong id="statusText">Belum ada data</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ai-panel" aria-label="Prediksi cumlaude dengan AI">
+        <div class="panel-header with-actions">
+          <div>
+            <h2>Prediksi Cumlaude dengan AI Generatif</h2>
+            <p>
+              AI menganalisis IPK saat ini, SKS yang sudah ditempuh, target
+              kelulusan, dan risiko nilai untuk memberi prediksi serta saran.
+            </p>
+          </div>
+          <button class="primary" id="predictButton" type="button">
+            Analisis AI
+          </button>
+        </div>
+
+        <div class="prediction-controls">
+          <label>
+            Target SKS Lulus
+            <input id="targetSksInput" type="number" min="1" max="200" value="144" />
+          </label>
+          <label>
+            Rencana Rata-rata Bobot Sisa SKS
+            <input
+              id="plannedWeightInput"
+              type="number"
+              min="0"
+              max="4"
+              step="0.1"
+              value="3.7"
+            />
+          </label>
+          <label>
+            Batas IPK Cumlaude
+            <input
+              id="cumlaudeLimitInput"
+              type="number"
+              min="0"
+              max="4"
+              step="0.01"
+              value="3.50"
+            />
+          </label>
+          <label>
+            Catatan Tambahan
+            <input
+              id="studentNoteInput"
+              type="text"
+              placeholder="Contoh: ingin lulus tepat waktu, tidak ada nilai D"
+            />
+          </label>
+        </div>
+
+        <div class="ai-result" id="aiResult">
+          Jalankan Ollama, pastikan model sudah tersedia, lalu klik Analisis AI.
+        </div>
+      </section>
+
+      <section class="workspace">
+        <aside class="rules-panel" aria-label="Aturan konversi nilai">
+          <div class="panel-header">
+            <h2>Konversi Nilai</h2>
+            <p>Skala umum akademik 4.00</p>
+          </div>
+          <div class="grade-rules" id="gradeRules"></div>
+          <div class="note">
+            Nilai angka dibatasi 0-100. Bobot mutu dihitung dari
+            <strong>SKS x bobot nilai</strong>.
+          </div>
+        </aside>
+
+        <section class="input-panel" aria-label="Input nilai mahasiswa">
+          <div class="panel-header with-actions">
+            <div>
+              <h2>Data Nilai</h2>
+              <p>Masukkan mata kuliah, jumlah SKS, dan nilai angka mahasiswa.</p>
+            </div>
+            <div class="actions">
+              <button class="secondary" id="sampleButton" type="button">Contoh</button>
+              <button class="secondary danger" id="resetButton" type="button">Reset</button>
+              <button class="primary" id="addButton" type="button">Tambah</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Mata Kuliah</th>
+                  <th>SKS</th>
+                  <th>Nilai Angka</th>
+                  <th>Huruf</th>
+                  <th>Bobot</th>
+                  <th>Mutu</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="courseRows"></tbody>
+            </table>
+          </div>
+
+          <div class="empty-state" id="emptyState">
+            Tambahkan mata kuliah untuk mulai menghitung IPK.
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

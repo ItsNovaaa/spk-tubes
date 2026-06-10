@@ -661,6 +661,7 @@ def calculate():
     alternatif_col = req_data.get('alternatif_col')
     criteria_configs = req_data.get('criteria_configs')  # List of {name, type: 'Benefit'/'Cost', weight_mode, manual_weight, rank, phi}
     v = float(req_data.get('v', 0.5))
+    print(f"--> [Backend] Menghitung VIKOR dengan nilai v = {v}")
     
     if session_id not in STORED_DATA:
         return jsonify({'error': 'Sesi data kadaluarsa atau tidak ditemukan. Silakan upload file kembali.'}), 400
